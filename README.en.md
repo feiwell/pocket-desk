@@ -54,8 +54,9 @@ Requires iOS 17+ (verified on iOS 27.0.1),
 Python 3.10+, Node.js.
 
 ```bash
-# 1. install
-pip install pocketdesk
+# 1. install (not on PyPI yet — from source)
+git clone https://github.com/feiwell/pocket-desk.git
+cd pocket-desk && pip install .
 
 # 2. pairing record (holds a private key: mode 600, never sync it)
 mkdir -p ~/.config/pocketdesk

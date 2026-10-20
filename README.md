@@ -47,8 +47,9 @@ iOS 的桌面布局只能手动拖，装了几百个 App 之后整理一次要�
 Python 3.10+、Node.js。
 
 ```bash
-# 1. 装依赖
-pip install pocketdesk
+# 1. 装依赖（尚未发布到 PyPI，从源码装）
+git clone https://github.com/feiwell/pocket-desk.git
+cd pocket-desk && pip install .
 
 # 2. 放配对文件（含私钥，务必 600）
 mkdir -p ~/.config/pocketdesk
