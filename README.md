@@ -65,6 +65,9 @@ pocketdesk list
 # 5. 预览整理方案（不改设备）
 pocketdesk plan --rules fine
 
+# 没有设备也能试规则：用之前存下的快照*离线*预览
+pocketdesk plan --rules fine --from snapshot.json --capacity 24
+
 # 6. 确认无误后写入（自动备份）
 pocketdesk plan --rules fine --apply
 

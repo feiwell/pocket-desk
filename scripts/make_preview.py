@@ -5,13 +5,27 @@ root = Path("/var/minis/workspace/pocket-desk")
 md = (root / "README.md").read_text(encoding="utf-8")
 
 # strip the <p align="center"> wrapper noise for a rough preview, keep structure
+def inline(text):
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', text)
+    text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
+    return text
+
 html_body = []
 in_code = False
 code_buf = []
 in_html = False
 html_html = []
 
-for line in md.splitlines():
+raw_lines = md.splitlines()
+joined = []
+for ln in raw_lines:
+    if joined and re.match(r"^\s{2,}\S", ln) and joined[-1].lstrip().startswith("- "):
+        joined[-1] = joined[-1].rstrip() + " " + ln.strip()
+        continue
+    joined.append(ln)
+
+for line in joined:
     if line.startswith("```"):
         if in_code:
             html_body.append("<pre><code>" + "\n".join(code_buf).replace("<", "&lt;") + "</code></pre>")
@@ -54,14 +68,11 @@ for line in md.splitlines():
         cells = [c.strip() for c in line.strip("|").split("|")]
         if set("".join(cells)) <= set("-: "):
             continue
-        html_body.append("<tr>" + "".join(f"<td>{c}</td>" for c in cells) + "</tr>")
+        html_body.append("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in cells) + "</tr>")
     elif re.match(r"^- ", line):
-        html_body.append(f"<li>{line[2:]}</li>")
+        html_body.append(f"<li>{inline(line[2:])}</li>")
     elif line.strip():
-        text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', line)
-        text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
-        text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
-        html_body.append(f"<p>{text}</p>")
+        html_body.append(f"<p>{inline(line)}</p>")
 
 # merge consecutive li / tr
 merged = []

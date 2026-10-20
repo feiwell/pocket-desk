@@ -72,6 +72,9 @@ pocketdesk list
 # 5. preview a plan (nothing is written)
 pocketdesk plan --rules fine
 
+# try rules with no device at all, from a saved snapshot
+pocketdesk plan --rules fine --from snapshot.json --capacity 24
+
 # 6. commit it (a snapshot is taken first)
 pocketdesk plan --rules fine --apply
 

@@ -116,9 +116,15 @@ async def cmd_grid(tunnel: Tunnel) -> int:
     return 0
 
 
-async def cmd_plan(args: argparse.Namespace, tunnel: Tunnel) -> int:
-    state = await springboard.read(tunnel)
-    capacity = springboard.page_capacity(await springboard.metrics(tunnel))
+async def cmd_plan(args: argparse.Namespace, tunnel: Tunnel | None) -> int:
+    if args.from_file:
+        state = springboard.load(args.from_file)
+        capacity = args.capacity or 24
+        print(f"(offline) state from {args.from_file}, capacity assumed {capacity}")
+    else:
+        assert tunnel is not None
+        state = await springboard.read(tunnel)
+        capacity = springboard.page_capacity(await springboard.metrics(tunnel))
 
     groups, first_page, name = rules_mod.load(args.rules)
     plan = layout_mod.build_layout(
@@ -143,10 +149,15 @@ async def cmd_plan(args: argparse.Namespace, tunnel: Tunnel) -> int:
             json.dump(plan, handle, ensure_ascii=False, default=str, indent=1)
         print(f"ok   plan written to {args.out}")
 
+    if args.from_file and args.apply:
+        print("\nFAIL --apply needs a device; drop --from to write")
+        return 1
+
     if not args.apply:
         print("\n(dry run - nothing written. Re-run with --apply to commit)")
         return 0
 
+    assert tunnel is not None
     backup = springboard.save(state, tag="before_apply")
     await springboard.write(tunnel, plan)
     print(f"ok   written. previous layout backed up to {backup}")
@@ -210,6 +221,10 @@ def main(argv: list[str] | None = None) -> int:
     p_plan.add_argument("--apply", action="store_true", help="write the plan to the device")
     p_plan.add_argument("--out", help="also write the plan JSON here")
     p_plan.add_argument("--min-folder-size", type=int, default=2)
+    p_plan.add_argument("--from", dest="from_file",
+                        help="preview from a saved state JSON instead of a device")
+    p_plan.add_argument("--capacity", type=int,
+                        help="items per page to assume when using --from (default 24)")
     p_plan.set_defaults(handler="plan")
 
     p_restore = sub.add_parser("restore", help="restore a previous layout snapshot")
@@ -226,6 +241,10 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_check(args)
     if args.command == "rules":
         return cmd_rules(args)
+
+    if args.command == "plan" and args.from_file:
+        # offline: no tunnel needed at all
+        return asyncio.run(cmd_plan(args, None))
 
     async def _run() -> int:
         async with Tunnel(host=args.host, pairing=args.pairing,
