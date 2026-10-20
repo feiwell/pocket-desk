@@ -13,3 +13,4 @@ pairing.plist
 *.plist
 backup/
 *.local.json
+preview.html
