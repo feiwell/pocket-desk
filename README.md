@@ -156,6 +156,9 @@ pocketdesk rules --init ~/.config/pocketdesk/rules/mine.json   # 生成模板
 - **`setIconState` 会把 App 资源库里的 App 全部放回主屏。** 166 个 App 会全部显形，
   而且**没有 API 能收回资源库**，只能手动"从主屏幕移除"。写入前请知情。
 - **dock 是顶层数组的第 0 项，不是第一页。** 当普通页处理会把 dock 清空。
+- **小火箭 / Shadowrocket 不能替代 LocalDevVPN。** 它做的是代理转发，配置里没有
+  `IP-Rewrite`，而且 `tun-excluded-routes` 默认把 `10.0.0.0/8` 排除在 TUN 之外。
+  两个一起开也不行——`check` 会报 `connected but no echo`，那正是"连上了但没有回声"。
 - **同一时刻只能有一条隧道。** 并发会互抢 `remoted` 的端口。
 - **不要连续重试。** 短时间内多次失败握手会触发 remoted 退避，冷却约 30 分钟。
 - 本人实测环境：iPhone18,2 / iOS 27.0.1 / LocalDevVPN / Alpine aarch64。

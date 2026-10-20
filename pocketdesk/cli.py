@@ -202,21 +202,33 @@ def main(argv: list[str] | None = None) -> int:
         prog="pocketdesk",
         description="Organize an iPhone home screen from the iPhone itself.",
     )
+    # duplicate the globals onto every subcommand so `check --pairing X` parses
+    # the same as `--pairing X check`
+    common = argparse.ArgumentParser(add_help=False)
+    # SUPPRESS: when the flag is absent on the subcommand, do not overwrite the
+    # value already parsed from the global position.
+    common.add_argument("--pairing", default=argparse.SUPPRESS,
+                        help="path to pairing.plist")
+    common.add_argument("--host", default=argparse.SUPPRESS,
+                        help=f"reflected host (default: {DEFAULT_HOST})")
+    common.add_argument("--quiet", action="store_true", default=argparse.SUPPRESS,
+                        help="hide handshake progress")
+
     parser.add_argument("--pairing", help="path to pairing.plist")
     parser.add_argument("--host", default=DEFAULT_HOST,
                         help=f"reflected host (default {DEFAULT_HOST})")
     parser.add_argument("--quiet", action="store_true", help="hide handshake progress")
 
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("check", help="preflight: pairing record + loopback reflection")
+    sub.add_parser("check", parents=[common], help="preflight: pairing record + loopback reflection")
 
-    p_list = sub.add_parser("list", help="show the current home screen")
+    p_list = sub.add_parser("list", parents=[common], help="show the current home screen")
     p_list.set_defaults(handler="list")
 
-    p_grid = sub.add_parser("grid", help="print the device grid geometry")
+    p_grid = sub.add_parser("grid", parents=[common], help="print the device grid geometry")
     p_grid.set_defaults(handler="grid")
 
-    p_plan = sub.add_parser("plan", help="build a layout and preview it")
+    p_plan = sub.add_parser("plan", parents=[common], help="build a layout and preview it")
     p_plan.add_argument("--rules", default="fine", help="rule set name or path (default: fine)")
     p_plan.add_argument("--apply", action="store_true", help="write the plan to the device")
     p_plan.add_argument("--out", help="also write the plan JSON here")
@@ -227,11 +239,11 @@ def main(argv: list[str] | None = None) -> int:
                         help="items per page to assume when using --from (default 24)")
     p_plan.set_defaults(handler="plan")
 
-    p_restore = sub.add_parser("restore", help="restore a previous layout snapshot")
+    p_restore = sub.add_parser("restore", parents=[common], help="restore a previous layout snapshot")
     p_restore.add_argument("backup", help="path to a snapshot JSON")
     p_restore.set_defaults(handler="restore")
 
-    p_rules = sub.add_parser("rules", help="list rule sets, or write a starter file")
+    p_rules = sub.add_parser("rules", parents=[common], help="list rule sets, or write a starter file")
     p_rules.add_argument("--init", help="write a starter rule file at this path")
     p_rules.set_defaults(handler="rules")
 

@@ -170,6 +170,11 @@ last page.
   Screen". Do this with eyes open.
 - **The dock is item 0 of the top-level array, not the first page.** Treat it as
   a page and the dock is wiped.
+- **Shadowrocket and similar proxy clients cannot replace LocalDevVPN.** They
+  forward traffic; their config has no `IP-Rewrite` section, and
+  `tun-excluded-routes` keeps `10.0.0.0/8` out of the TUN by default. Running both
+  does not help — `check` reports `connected but no echo`, which is exactly the
+  "connected but nothing came back" signature.
 - **Only one tunnel at a time.** Concurrent sessions fight over remoted's port.
 - **Do not retry in a loop.** Repeated failed handshakes make remoted back off
   for roughly 30 minutes.
