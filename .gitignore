@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.DS_Store
+
+# never commit pairing records or layout snapshots containing private data
+pairing.plist
+*.plist
+backup/
+*.local.json

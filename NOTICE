@@ -1,0 +1,46 @@
+pocket-desk
+Copyright (c) 2026 feiwell
+
+This project is MIT licensed. Parts of it derive from third-party MIT-licensed
+work, listed below.
+
+==============================================================================
+coredevice-toolkit  (OpenMinis / MinisSkills)
+https://github.com/OpenMinis/MinisSkills/tree/main/coredevice-toolkit
+License: MIT
+Copyright (c) OpenMinis
+==============================================================================
+
+Vendored / adapted in:
+
+  pocketdesk/session.py
+      Adapted from scripts/coredevice_session.py.
+      Kept: the RPPairing frames, TLV8 encoding, pair-verify (X25519 + Ed25519 +
+      ChaCha20-Poly1305 + HKDF) and createListener request construction.
+      Changed: removed the hard-coded /var/minis and /root/.cdtk paths in favour
+      of portable XDG locations; dropped the CoreDeviceSession class, which
+      dials through UserspaceDialPlane (that relay deadlocks in some userland
+      network stacks — see docs/PITFALLS.md D3/D4).
+
+  pocketdesk/tls_psk_proxy.js
+      Copied verbatim. Node.js TLS-PSK to unix-socket relay bridge.
+
+  pocketdesk/tunnel.py
+      Originally derived from the same toolkit's session layer, then largely
+      rewritten: it drives RemotePairingTcpTunnel + UserspaceTun.connect_tcp()
+      directly and supplies its own asyncio stream adapters, instead of using
+      UserspaceDialPlane.
+
+==============================================================================
+pymobiledevice3
+https://github.com/doronz88/pymobiledevice3
+License: GPL-3.0
+==============================================================================
+
+Not vendored — declared as a runtime dependency in pyproject.toml. pocketdesk
+imports its public modules (remote tunnel service, userspace tunnel, RSD,
+SpringBoard and diagnostics services). Because pymobiledevice3 is GPL-3.0,
+downstream redistribution that bundles it must comply with GPL-3.0 as well;
+pocketdesk itself only imports it at runtime and does not include its source.
+
+If you plan to ship a bundled binary distribution, review that obligation first.

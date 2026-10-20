@@ -1,0 +1,486 @@
+[
+ [
+  {
+   "displayIdentifier": "com.tencent.xin",
+   "displayName": "微信",
+   "iconModDate": "2026-09-29 13:38:57.295316",
+   "bundleVersion": "8.0.79.35",
+   "bundleIdentifier": "com.tencent.xin"
+  },
+  {
+   "displayIdentifier": "com.apple.mobilesafari",
+   "displayName": "Safari浏览器",
+   "iconModDate": "2026-10-18 15:25:51.925653",
+   "bundleVersion": "8625.1.29.10.33",
+   "bundleIdentifier": "com.apple.mobilesafari"
+  },
+  {
+   "displayIdentifier": "com.apple.mobilephone",
+   "displayName": "电话",
+   "iconModDate": "2026-09-26 14:41:17",
+   "bundleVersion": "36",
+   "bundleIdentifier": "com.apple.mobilephone"
+  },
+  {
+   "displayIdentifier": "com.apple.MobileSMS",
+   "displayName": "信息",
+   "iconModDate": "2026-10-18 15:25:54.411631",
+   "bundleVersion": "1491.100.1.2.28",
+   "bundleIdentifier": "com.apple.MobileSMS"
+  }
+ ],
+ [
+  {
+   "iconLists": [
+    [
+     {
+      "displayIdentifier": "com.nssurge.inc.surge-ios",
+      "displayName": "Surge",
+      "iconModDate": "2026-10-19 16:20:29.861344",
+      "bundleVersion": "3867",
+      "bundleIdentifier": "com.nssurge.inc.surge-ios"
+     },
+     {
+      "displayIdentifier": "com.liguangming.Shadowrocket",
+      "displayName": "Shadowrocket",
+      "iconModDate": "2026-10-13 15:26:57.099116",
+      "bundleVersion": "3445",
+      "bundleIdentifier": "com.liguangming.Shadowrocket"
+     },
+     {
+      "displayIdentifier": "com.jkcoxson.LocalDevVPN",
+      "displayName": "LocalDevVPN",
+      "iconModDate": "2026-10-19 16:19:45.611909",
+      "bundleVersion": "1",
+      "bundleIdentifier": "com.jkcoxson.LocalDevVPN"
+     },
+     {
+      "displayIdentifier": "apple.hiddify.com",
+      "displayName": "Hiddify",
+      "iconModDate": "2026-09-10 12:06:40.604783",
+      "bundleVersion": "40002",
+      "bundleIdentifier": "apple.hiddify.com"
+     },
+     {
+      "displayIdentifier": "com.milim.relay",
+      "displayName": "Conduit",
+      "iconModDate": "2026-10-17 07:06:00.915165",
+      "bundleVersion": "198",
+      "bundleIdentifier": "com.milim.relay"
+     },
+     {
+      "displayIdentifier": "com.appstudio.Jinx",
+      "displayName": "Jinx",
+      "iconModDate": "2026-10-13 21:13:04.003133",
+      "bundleVersion": "4",
+      "bundleIdentifier": "com.appstudio.Jinx"
+     },
+     {
+      "displayIdentifier": "com.cxkun.app",
+      "displayName": "坤哥签名",
+      "iconModDate": "2026-07-18 05:40:40",
+      "bundleVersion": "1",
+      "bundleIdentifier": "com.cxkun.app"
+     }
+    ]
+   ],
+   "listType": "folder",
+   "displayName": "网络工具"
+  },
+  {
+   "iconLists": [
+    [
+     {
+      "displayIdentifier": "ph.telegra.Telegraph",
+      "displayName": "Telegram",
+      "iconModDate": "2026-09-14 03:13:41.296724",
+      "bundleVersion": "34639",
+      "bundleIdentifier": "ph.telegra.Telegraph"
+     },
+     {
+      "displayIdentifier": "com.atebits.Tweetie2",
+      "displayName": "X",
+      "iconModDate": "2026-10-11 09:41:57.025524",
+      "bundleVersion": "31",
+      "bundleIdentifier": "com.atebits.Tweetie2"
+     },
+     {
+      "displayIdentifier": "com.hammerandchisel.discord",
+      "displayName": "Discord",
+      "iconModDate": "2026-09-14 07:21:55.057900",
+      "bundleVersion": "110861",
+      "bundleIdentifier": "com.hammerandchisel.discord"
+     },
+     {
+      "displayIdentifier": "com.google.Gmail",
+      "displayName": "Gmail",
+      "iconModDate": "2026-10-15 07:48:11.448963",
+      "bundleVersion": "6.0.261005.1808364",
+      "bundleIdentifier": "com.google.Gmail"
+     },
+     {
+      "displayIdentifier": "com.github.stormbreaker.prod",
+      "displayName": "GitHub",
+      "iconModDate": "2026-09-12 02:45:36.553919",
+      "bundleVersion": "204429908",
+      "bundleIdentifier": "com.github.stormbreaker.prod"
+     },
+     {
+      "displayIdentifier": "com.google.chrome.ios",
+      "displayName": "Chrome",
+      "iconModDate": "2026-05-28 02:39:21.907803",
+      "bundleVersion": "149.0.7827.45",
+      "bundleIdentifier": "com.google.chrome.ios"
+     },
+     {
+      "displayIdentifier": "com.microsoft.msedge",
+      "displayName": "Edge",
+      "iconModDate": "2026-05-28 02:39:17.489806",
+      "bundleVersion": "148.0.3967.84",
+      "bundleIdentifier": "com.microsoft.msedge"
+     },
+     {
+      "displayIdentifier": "com.duolingo.DuolingoMobile",
+      "displayName": "Duolingo",
+      "iconModDate": "2026-09-17 04:55:21.433949",
+      "bundleVersion": "7.140.0.11",
+      "bundleIdentifier": "com.duolingo.DuolingoMobile"
+     },
+     {
+      "displayIdentifier": "com.czzhao.binance",
+      "displayName": "币安",
+      "iconModDate": "2026-10-19 04:50:31.050513",
+      "bundleVersion": "1.261008.3",
+      "bundleIdentifier": "com.czzhao.binance"
+     }
+    ],
+    [
+     {
+      "displayIdentifier": "com.gateio.app.gateio-app",
+      "displayName": "Gate",
+      "iconModDate": "2026-09-16 01:52:20.185137",
+      "bundleVersion": "202608360100",
+      "bundleIdentifier": "com.gateio.app.gateio-app"
+     },
+     {
+      "displayIdentifier": "com.tronlink.hdwallet",
+      "displayName": "TronLink",
+      "iconModDate": "2026-10-18 01:55:17.145051",
+      "bundleVersion": "1",
+      "bundleIdentifier": "com.tronlink.hdwallet"
+     },
+     {
+      "displayIdentifier": "com.larksuite.lark",
+      "displayName": "Lark",
+      "iconModDate": "2026-09-07 00:39:57.557512",
+      "bundleVersion": "853985304",
+      "bundleIdentifier": "com.larksuite.lark"
+     },
+     {
+      "displayIdentifier": "com.apple.news",
+      "displayName": "News",
+      "iconModDate": "2026-10-18 15:25:59.096720",
+      "bundleVersion": "5934.3",
+      "bundleIdentifier": "com.apple.news"
+     },
+     {
+      "displayIdentifier": "com.apple.tv",
+      "displayName": "TV",
+      "iconModDate": "2026-10-18 15:25:57.508757",
+      "bundleVersion": "1",
+      "bundleIdentifier": "com.apple.tv"
+     },
+     {
+      "displayIdentifier": "developer.apple.wwdc-Release",
+      "displayName": "Developer",
+      "iconModDate": "2026-09-11 22:28:55",
+      "bundleVersion": "1110.5.3",
+      "bundleIdentifier": "developer.apple.wwdc-Release"
+     },
+     {
+      "displayIdentifier": "com.apple.MobileStore",
+      "displayName": "iTunes Store",
+      "iconModDate": "2026-10-18 15:25:56.982798",
+      "bundleVersion": "1",
+      "bundleIdentifier": "com.apple.MobileStore"
+     }
+    ]
+   ],
+   "listType": "folder",
+   "displayName": "外网应用"
+  },
+  {
+   "iconLists": [
+    [
+     {
+      "displayIdentifier": "com.bot.doubao",
+      "displayName": "豆包",
+      "iconModDate": "2026-09-29 13:20:05.982448",
+      "bundleVersion": "15020141",
+      "bundleIdentifier": "com.bot.doubao"
+     },
+     {
+      "displayIdentifier": "com.openai.chat",
+      "displayName": "ChatGPT",
+      "iconModDate": "2026-09-12 02:43:56.642692",
+      "bundleVersion": "33940143573",
+      "bundleIdentifier": "com.openai.chat"
+     },
+     {
+      "displayIdentifier": "com.deepseek.chat",
+      "displayName": "DeepSeek",
+      "iconModDate": "2026-09-29 13:12:47.525766",
+      "bundleVersion": "5",
+      "bundleIdentifier": "com.deepseek.chat"
+     },
+     {
+      "displayIdentifier": "com.tencent.hunyuan.app.chat",
+      "displayName": "元宝",
+      "iconModDate": "2026-10-19 21:13:45.593126",
+      "bundleVersion": "18",
+      "bundleIdentifier": "com.tencent.hunyuan.app.chat"
+     },
+     {
+      "displayIdentifier": "com.aliyun.ios.tongyi",
+      "displayName": "千问",
+      "iconModDate": "2026-10-13 19:52:59.907739",
+      "bundleVersion": "7.4.5.3051",
+      "bundleIdentifier": "com.aliyun.ios.tongyi"
+     },
+     {
+      "displayIdentifier": "com.tencent.imaios",
+      "displayName": "ima",
+      "iconModDate": "2026-10-09 13:17:16.926625",
+      "bundleVersion": "1499",
+      "bundleIdentifier": "com.tencent.imaios"
+     },
+     {
+      "displayIdentifier": "com.meituan.longcat",
+      "displayName": "LongCat",
+      "iconModDate": "2026-09-19 02:57:38.644727",
+      "bundleVersion": "393",
+      "bundleIdentifier": "com.meituan.longcat"
+     },
+     {
+      "displayIdentifier": "com.tabbit.ai",
+      "displayName": "Tabbit",
+      "iconModDate": "2026-09-17 04:55:08.910348",
+      "bundleVersion": "10050100",
+      "bundleIdentifier": "com.tabbit.ai"
+     },
+     {
+      "displayIdentifier": "com.aitutor.hippo",
+      "displayName": "豆包爱学",
+      "iconModDate": "2026-06-05 05:56:18.710661",
+      "bundleVersion": "5.3.8.02",
+      "bundleIdentifier": "com.aitutor.hippo"
+     }
+    ],
+    [
+     {
+      "displayIdentifier": "com.apple.GenerativePlaygroundApp",
+      "displayName": "图乐园",
+      "iconModDate": "2026-10-18 15:25:57.935128",
+      "bundleVersion": "198.1.102",
+      "bundleIdentifier": "com.apple.GenerativePlaygroundApp"
+     },
+     {
+      "displayIdentifier": "com.apple.SiriApp",
+      "displayName": "Siri",
+      "iconModDate": "2026-10-18 15:25:54.872946",
+      "bundleIdentifier": "com.apple.SiriApp"
+     }
+    ]
+   ],
+   "listType": "folder",
+   "displayName": "AI 助手"
+  },
+  {
+   "iconLists": [
+    [
+     {
+      "displayIdentifier": "com.tencent.mqq",
+      "displayName": "QQ",
+      "iconModDate": "2026-09-16 01:52:15.586382",
+      "bundleVersion": "9.3.60.612",
+      "bundleIdentifier": "com.tencent.mqq"
+     },
+     {
+      "displayIdentifier": "com.tencent.ww",
+      "displayName": "企业微信",
+      "iconModDate": "2026-10-13 18:24:38.673727",
+      "bundleVersion": "235378",
+      "bundleIdentifier": "com.tencent.ww"
+     },
+     {
+      "displayIdentifier": "my.maya.iphone",
+      "displayName": "多闪",
+      "iconModDate": "2026-09-29 13:23:53.830611",
+      "bundleVersion": "406011",
+      "bundleIdentifier": "my.maya.iphone"
+     },
+     {
+      "displayIdentifier": "com.douban.frodo",
+      "displayName": "豆瓣",
+      "iconModDate": "2026-09-28 12:45:03.450464",
+      "bundleVersion": "071350003",
+      "bundleIdentifier": "com.douban.frodo"
+     },
+     {
+      "displayIdentifier": "com.tencent.qqmail",
+      "displayName": "QQ邮箱",
+      "iconModDate": "2026-08-10 05:43:23.056552",
+      "bundleVersion": "7.1.8.167",
+      "bundleIdentifier": "com.tencent.qqmail"
+     },
+     {
+      "displayIdentifier": "com.apple.mobilemail",
+      "displayName": "邮件",
+      "iconModDate": "2026-10-18 15:25:52.954230",
+      "bundleVersion": "3901.100.1.2.14",
+      "bundleIdentifier": "com.apple.mobilemail"
+     },
+     {
+      "displayIdentifier": "com.apple.facetime",
+      "displayName": "FaceTime通话",
+      "iconModDate": "2026-10-18 15:25:56.315454",
+      "bundleVersion": "36",
+      "bundleIdentifier": "com.apple.facetime"
+     },
+     {
+      "displayIdentifier": "com.apple.MobileAddressBook",
+      "displayName": "联系人",
+      "iconModDate": "2026-10-18 15:25:57.454225",
+      "bundleVersion": "1.0",
+      "bundleIdentifier": "com.apple.MobileAddressBook"
+     }
+    ]
+   ],
+   "listType": "folder",
+   "displayName": "社交通讯"
+  },
+  {
+   "iconLists": [
+    [
+     {
+      "displayIdentifier": "com.netease.cloudmusic",
+      "displayName": "网易云音乐",
+      "iconModDate": "2026-09-29 13:39:36.362955",
+      "bundleVersion": "7478",
+      "bundleIdentifier": "com.netease.cloudmusic"
+     },
+     {
+      "displayIdentifier": "com.gemd.iting",
+      "displayName": "喜马拉雅",
+      "iconModDate": "2026-09-29 13:38:04.072139",
+      "bundleVersion": "9.5.13.5",
+      "bundleIdentifier": "com.gemd.iting"
+     },
+     {
+      "displayIdentifier": "com.soda.music",
+      "displayName": "汽水音乐",
+      "iconModDate": "2026-09-29 13:42:59.275210",
+      "bundleVersion": "100210020",
+      "bundleIdentifier": "com.soda.music"
+     },
+     {
+      "displayIdentifier": "com.wenyu.bodian",
+      "displayName": "波点音乐",
+      "iconModDate": "2026-10-06 06:57:17.256202",
+      "bundleVersion": "485",
+      "bundleIdentifier": "com.wenyu.bodian"
+     },
+     {
+      "displayIdentifier": "com.apple.Music",
+      "displayName": "音乐",
+      "iconModDate": "2026-10-18 15:26:00.482865",
+      "bundleVersion": "4026.110.1",
+      "bundleIdentifier": "com.apple.Music"
+     },
+     {
+      "displayIdentifier": "com.apple.podcasts",
+      "displayName": "播客",
+      "iconModDate": "2026-10-18 15:26:00.956396",
+      "bundleVersion": "4027.110.2",
+      "bundleIdentifier": "com.apple.podcasts"
+     },
+     {
+      "displayIdentifier": "com.apple.mobilegarageband",
+      "displayName": "库乐队",
+      "iconModDate": "2026-08-15 05:49:58.084229",
+      "bundleVersion": "5456",
+      "bundleIdentifier": "com.apple.mobilegarageband"
+     },
+     {
+      "displayIdentifier": "com.ss.iphone.yumme.video",
+      "displayName": "抖音精选",
+      "iconModDate": "2026-06-10 17:18:10.119740",
+      "bundleVersion": "391011",
+      "bundleIdentifier": "com.ss.iphone.yumme.video"
+     }
+    ]
+   ],
+   "listType": "folder",
+   "displayName": "影音音频"
+  },
+  {
+   "iconLists": [
+    [
+     {
+      "displayIdentifier": "com.apple.games",
+      "displayName": "游戏",
+      "iconModDate": "2026-10-18 15:25:59.240259",
+      "bundleVersion": "1",
+      "bundleIdentifier": "com.apple.games"
+     },
+     {
+      "displayIdentifier": "com.netease.mc",
+      "displayName": "我的世界",
+      "iconModDate": "2026-06-29 03:22:17.566755",
+      "bundleVersion": "3.8.25.293524",
+      "bundleIdentifier": "com.netease.mc"
+     },
+     {
+      "displayIdentifier": "com.tencent.tmgp.osgame",
+      "displayName": "王者万象棋",
+      "iconModDate": "2026-09-13 05:59:36.095247",
+      "bundleVersion": "774472",
+      "bundleIdentifier": "com.tencent.tmgp.osgame"
+     },
+     {
+      "displayIdentifier": "com.netease.godlike",
+      "displayName": "网易大神",
+      "iconModDate": "2026-09-29 13:40:41.612067",
+      "bundleVersion": "59604",
+      "bundleIdentifier": "com.netease.godlike"
+     }
+    ]
+   ],
+   "listType": "folder",
+   "displayName": "游戏"
+  }
+ ],
+ [
+  {
+   "displayIdentifier": "tv.danmaku.bilianime",
+   "displayName": "哔哩哔哩",
+   "iconModDate": "2026-09-13 06:49:04.046225",
+   "bundleVersion": "91100100",
+   "bundleIdentifier": "tv.danmaku.bilianime"
+  },
+  {
+   "displayIdentifier": "com.ss.iphone.ugc.Aweme",
+   "displayName": "抖音",
+   "iconModDate": "2026-10-13 21:13:12.371476",
+   "bundleVersion": "407019",
+   "bundleIdentifier": "com.ss.iphone.ugc.Aweme"
+  },
+  {
+   "displayIdentifier": "com.autonavi.amap",
+   "displayName": "高德地图",
+   "iconModDate": "2026-09-29 13:49:43.945997",
+   "bundleVersion": "17.00.2.2011",
+   "bundleIdentifier": "com.autonavi.amap"
+  }
+ ]
+]

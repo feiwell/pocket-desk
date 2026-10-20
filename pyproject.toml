@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pocketdesk"
+version = "0.1.0"
+description = "Organize an iPhone home screen from the iPhone itself, over the CoreDevice RSD tunnel."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "pymobiledevice3>=11.34.0",
+    "pmd-pytcp",
+    "cryptography>=41",
+]
+
+[project.scripts]
+pocketdesk = "pocketdesk.cli:main"
+
+[tool.setuptools]
+packages = ["pocketdesk"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+pocketdesk = ["tls_psk_proxy.js", "presets/*.json"]
