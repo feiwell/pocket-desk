@@ -100,7 +100,8 @@ LocalDevVPN reflects 10.7.0.1 back to the device
 ```
 
 Every step has exactly one working form; the alternatives fail silently. The
-full list of dead ends (19 of them, with the original errors) is in
+full list of pitfalls (24 entries, including original errors and layout safety
+boundaries) is in
 [docs/PITFALLS.md](docs/PITFALLS.md).
 
 ### How pages are computed
@@ -109,7 +110,11 @@ Ask the device for its grid instead of assuming:
 
 ```python
 svc = SpringBoardServicesService(rsd)
-m = await svc.get_homescreen_icon_metrics()
+try:
+    await svc.connect()  # construction alone does not connect
+    m = await svc.get_homescreen_icon_metrics()
+finally:
+    await svc.close()
 # homeScreenIconColumns=4 × homeScreenIconRows=6 → 24 items per page
 ```
 
@@ -149,6 +154,72 @@ pocketdesk rules --init ~/.config/pocketdesk/rules/mine.json   # starter file
 Apps that match no group are **not dropped** — they stay as loose icons on the
 last page.
 
+## Incremental merge: keep the existing layout
+
+Use `merge`, not a full `plan`, to collect newly scattered icons without
+reorganizing existing folders. `mapping.json` maps **`displayIdentifier`
+(bundle id) → exact existing folder name**, never an ambiguous app display name:
+
+```json
+{
+  "com.example.reader": "Reading",
+  "com.example.utility": "Tools"
+}
+```
+
+```bash
+pocketdesk merge --assignments mapping.json                 # preview only
+pocketdesk merge --assignments mapping.json --from snapshot.json --out proposed.json
+# Inspect the preview and obtain explicit approval before writing:
+pocketdesk merge --assignments mapping.json --apply         # backup, write, verify
+```
+
+- Assignments must cover **every loose icon on pages after the last page that
+  contains a folder**, exactly once. Loose icons on earlier pages, unknown IDs,
+  unknown/ambiguous folder names, duplicate JSON keys/icons, widgets, nested
+  folders and malformed states are rejected without writing.
+- No new folders or repacking: preserve the raw Dock, folder order, existing
+  members and existing page boundaries. Append additions to the target folder's
+  last internal page in source order; remove the emptied trailing home-screen
+  pages. Mapping key order does not change icon order.
+- Index 0 in `[dock, page1, ...]` is **not a page**. Keep raw dictionaries and
+  `datetime` objects via deep copies; pass them to official
+  `set_icon_state(raw_plan)`, never through a JSON round-trip or hand-built
+  plist/framing.
+- `plan` and `merge` default to dry-run. `--from` cannot be combined with
+  `--apply`. `restore` is an explicit write command.
+
+### What successful verification means
+
+A snapshot is saved before writing. `plan --apply`, `merge --apply` and
+`restore` read back and compare Dock identities/order, icon conservation and
+uniqueness, folder membership/order, internal folder pages and home-screen
+page boundaries — not just counts. Planning preserves the entire raw Dock.
+Read-back tolerates row wrappers and refreshed names/versions/dates (non-layout
+metadata), not changed positions. Mismatches return nonzero, never success.
+A timeout/disconnection means **outcome unknown**: iOS may already have applied
+the request. Inspect/read back before retrying. There is no automatic rollback.
+iOS repaginating a folder or adding App Library icons also fails conservatively.
+
+New JSON snapshots encode datetimes with a type marker. For legacy snapshots
+written with `default=str`, only an app's `iconModDate` is parsed as an ISO
+datetime (including space-separated timestamps); invalid dates are rejected.
+Other strings are never guessed into dates. This repairs types, not stale
+installed-app inventories. Never upload snapshots, pairing files or credentials.
+
+## Offline tests
+
+`pyproject.toml` has no pytest-specific configuration. Use standard-library
+unittest, with no extra test dependency:
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+All layouts are synthetic. Services, tunnels and preflight probes are mocked;
+no real device backup is read and no device is contacted. The root
+[SKILL.md](SKILL.md) provides a concise execution/safety guide.
+
 ## Commands
 
 | Command | What it does |
@@ -158,7 +229,9 @@ last page.
 | `grid` | Print the device's real grid geometry |
 | `plan --rules X` | Build and preview a layout (dry run by default) |
 | `plan --rules X --apply` | Snapshot, write, and read back |
-| `restore <snapshot>` | Roll back to a snapshot |
+| `merge --assignments mapping.json` | Merge trailing loose icons into existing folders (dry run) |
+| `merge --assignments mapping.json --apply` | Snapshot, merge, verify positions/membership/page boundaries |
+| `restore <snapshot>` | Restore a snapshot and verify the actual read-back |
 | `rules` | List available rule sets |
 
 ## Caveats

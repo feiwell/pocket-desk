@@ -145,8 +145,7 @@ async def cmd_plan(args: argparse.Namespace, tunnel: Tunnel | None) -> int:
     print("ok   verify: every app placed once, dock untouched")
 
     if args.out:
-        with open(args.out, "w", encoding="utf-8") as handle:
-            json.dump(plan, handle, ensure_ascii=False, default=str, indent=1)
+        springboard.dump(plan, args.out)
         print(f"ok   plan written to {args.out}")
 
     if args.from_file and args.apply:
@@ -158,27 +157,85 @@ async def cmd_plan(args: argparse.Namespace, tunnel: Tunnel | None) -> int:
         return 0
 
     assert tunnel is not None
-    backup = springboard.save(state, tag="before_apply")
-    await springboard.write(tunnel, plan)
-    print(f"ok   written. previous layout backed up to {backup}")
+    return await _apply_verified(tunnel, state, plan, "before_apply")
 
-    await asyncio.sleep(4)
-    after = await springboard.read(tunnel)
-    dock = layout_mod.dock_of(after)
-    pages = layout_mod.unwrap_pages(after)
-    print(f"read back: dock {len(dock)}, {len(pages)} page(s), "
-          f"items per page {[len(p) for p in pages]}")
+
+async def _apply_verified(tunnel: Tunnel, current: list, plan: list, tag: str) -> int:
+    """Do not report success until actual positions match, not merely counts."""
+    problems = layout_mod.verify(current, plan)
+    if problems:
+        raise ValueError("unsafe plan: " + "; ".join(problems))
+    backup = springboard.save(current, tag=tag)
+    print(f"previous layout backed up to {backup}")
+    return await _write_read_verified(tunnel, current, plan, backup)
+
+
+async def _write_read_verified(tunnel: Tunnel, baseline: list, plan: list, backup: str) -> int:
+    try:
+        await springboard.write(tunnel, plan)
+        await asyncio.sleep(4)
+        actual = await springboard.read(tunnel)
+    except Exception as exc:  # a timed-out request may already have changed iOS
+        print(f"FAIL write/read-back: {type(exc).__name__}: {exc}")
+        print(f"Outcome UNKNOWN; do not retry blindly. Inspect device; recovery snapshot: {backup}")
+        return 1
+    problems = layout_mod.verify(baseline, actual, expected=plan)
+    if problems:
+        for problem in problems:
+            print(f"FAIL read-back: {problem}")
+        print(f"Layout NOT verified. Inspect device; recovery snapshot: {backup}")
+        return 1
+    print("ok   written and read-back verified: Dock, icons, folders, order and page boundaries")
     return 0
+
+
+def _unique_assignments(pairs: list[tuple[str, object]]) -> dict:
+    result: dict = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate assignment key: {key}")
+        result[key] = value
+    return result
+
+
+async def cmd_merge(args: argparse.Namespace, tunnel: Tunnel | None) -> int:
+    if args.from_file and args.apply:
+        print("FAIL --apply needs a device; drop --from to write")
+        return 1
+    with open(args.assignments, encoding="utf-8") as handle:
+        assignments = json.load(handle, object_pairs_hook=_unique_assignments)
+    if args.from_file:
+        state = springboard.load(args.from_file)
+    else:
+        assert tunnel is not None
+        state = await springboard.read(tunnel)
+    plan = layout_mod.merge_layout(state, assignments)
+    print(layout_mod.describe(plan))
+    print("ok   verify: every app placed once, dock untouched; trailing pages removed")
+    if args.out:
+        springboard.dump(plan, args.out)
+        print(f"ok   plan written to {args.out}")
+    if not args.apply:
+        print("\n(dry run - nothing written. Re-run with --apply to write)")
+        return 0
+    assert tunnel is not None
+    return await _apply_verified(tunnel, state, plan, "before_merge")
 
 
 async def cmd_restore(args: argparse.Namespace, tunnel: Tunnel) -> int:
     target = springboard.load(args.backup)
+    problems = layout_mod.verify(target, target)
+    if problems:
+        raise ValueError("invalid restore snapshot: " + "; ".join(problems))
     current = await springboard.read(tunnel)
-    safety = springboard.save(current, tag="before_restore")
-    await springboard.write(tunnel, target)
-    print(f"ok   restored from {args.backup}")
-    print(f"     previous state saved to {safety}")
-    return 0
+    # A restore intentionally changes the current Dock/inventory. Validate the
+    # read-back against the restore target, not the layout being replaced.
+    backup = springboard.save(current, tag="before_restore")
+    print(f"previous layout backed up to {backup}")
+    code = await _write_read_verified(tunnel, target, target, backup)
+    if code == 0:
+        print(f"ok   restored and read-back verified from {args.backup}")
+    return code
 
 
 def cmd_rules(args: argparse.Namespace) -> int:
@@ -197,7 +254,7 @@ def cmd_rules(args: argparse.Namespace) -> int:
 
 # ---------------------------------------------------------------------------
 
-def main(argv: list[str] | None = None) -> int:
+def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="pocketdesk",
         description="Organize an iPhone home screen from the iPhone itself.",
@@ -239,6 +296,15 @@ def main(argv: list[str] | None = None) -> int:
                         help="items per page to assume when using --from (default 24)")
     p_plan.set_defaults(handler="plan")
 
+    p_merge = sub.add_parser("merge", parents=[common],
+                             help="merge trailing loose icons into existing folders (dry run)")
+    p_merge.add_argument("--assignments", required=True,
+                         help="JSON object: displayIdentifier -> existing folder name")
+    p_merge.add_argument("--apply", action="store_true", help="write only after explicit opt-in")
+    p_merge.add_argument("--from", dest="from_file", help="offline snapshot; cannot combine with --apply")
+    p_merge.add_argument("--out", help="export the proposed snapshot JSON")
+    p_merge.set_defaults(handler="merge")
+
     p_restore = sub.add_parser("restore", parents=[common], help="restore a previous layout snapshot")
     p_restore.add_argument("backup", help="path to a snapshot JSON")
     p_restore.set_defaults(handler="restore")
@@ -254,9 +320,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "rules":
         return cmd_rules(args)
 
-    if args.command == "plan" and args.from_file:
+    if args.command in ("plan", "merge") and args.from_file:
         # offline: no tunnel needed at all
-        return asyncio.run(cmd_plan(args, None))
+        handler = cmd_plan if args.command == "plan" else cmd_merge
+        return asyncio.run(handler(args, None))
 
     async def _run() -> int:
         async with Tunnel(host=args.host, pairing=args.pairing,
@@ -268,11 +335,21 @@ def main(argv: list[str] | None = None) -> int:
                 return await cmd_grid(tunnel)
             if handler == "plan":
                 return await cmd_plan(args, tunnel)
+            if handler == "merge":
+                return await cmd_merge(args, tunnel)
             if handler == "restore":
                 return await cmd_restore(args, tunnel)
             return 2
 
     return asyncio.run(_run())
+
+
+def main(argv: list[str] | None = None) -> int:
+    try:
+        return _main(argv)
+    except (ValueError, TypeError, OSError) as exc:
+        print(f"FAIL {exc}")
+        return 1
 
 
 if __name__ == "__main__":
