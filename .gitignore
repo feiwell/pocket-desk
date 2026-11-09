@@ -14,3 +14,8 @@ pairing.plist
 backup/
 *.local.json
 preview.html
+exports/
+.env
+.env.*
+*.log
+.git-credentials

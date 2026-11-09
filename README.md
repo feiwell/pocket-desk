@@ -93,7 +93,7 @@ LocalDevVPN 把 10.7.0.1 反射回本机
 ```
 
 这条链上每一步都只有一种写法能通，其他都会静默失败。
-完整的失败清单（19 条，含原始报错）在 [docs/PITFALLS.md](docs/PITFALLS.md)。
+完整的失败清单（24 条，含原始报错与布局安全边界）在 [docs/PITFALLS.md](docs/PITFALLS.md)。
 
 ### 布局怎么算的
 
@@ -101,7 +101,11 @@ LocalDevVPN 把 10.7.0.1 反射回本机
 
 ```python
 svc = SpringBoardServicesService(rsd)
-m = await svc.get_homescreen_icon_metrics()
+try:
+    await svc.connect()  # 构造对象不会自动连接
+    m = await svc.get_homescreen_icon_metrics()
+finally:
+    await svc.close()
 # homeScreenIconColumns=4 × homeScreenIconRows=6 → 24 项/页
 ```
 
@@ -138,6 +142,57 @@ pocketdesk rules --init ~/.config/pocketdesk/rules/mine.json   # 生成模板
 
 没匹配到任何分组的 App **不会丢**，会作为散图标排在最后一页。
 
+## 增量归类：只收尾部散图标
+
+已有文件夹布局不想重排时，用 `merge`，不要重新跑全量 `plan`。
+`mapping.json` 是 **`displayIdentifier`（bundle id）→ 已有文件夹的精确名称**，不是 App 显示名称：
+
+```json
+{
+  "com.example.reader": "阅读",
+  "com.example.utility": "工具"
+}
+```
+
+```bash
+pocketdesk merge --assignments mapping.json                # 只预览，不写入
+pocketdesk merge --assignments mapping.json --from snapshot.json --out proposed.json
+# 检查预览并明确同意后，才执行：
+pocketdesk merge --assignments mapping.json --apply        # 自动备份、写入、精确回读
+```
+
+- 必须完整覆盖**最后一个含文件夹的页面之后的全部散图标**。前面页面若有散图标、未知 id、
+  未知/重名目标文件夹、重复 JSON 键、重复图标、widget/嵌套文件夹或异常结构，直接拒绝。
+- 不创建文件夹，不改变 Dock、现有文件夹顺序、已有成员或已有页边界；按散图标原顺序追加到
+  目标文件夹最后一个内部页，删除收空的尾部主屏页。不会因 mapping 键顺序重排。
+- `[dock, page1, ...]` 的第 0 项是 Dock，**不是页**。原始字典与 `datetime` 用深拷贝保留，
+  写入官方 `set_icon_state(raw_plan)`，不经 JSON 往返，不手拼 plist 或消息长度头。
+- `plan`/`merge` 默认 dry-run；`--from` 永远不能与 `--apply` 合用。`restore` 是显式写入命令。
+
+### 写入与回读的安全边界
+
+写入前自动保存快照。写入返回不等于成功：`plan --apply`、`merge --apply` 和 `restore`
+都会回读并比较 Dock 图标身份/顺序、全量图标集合、重复、文件夹归属/顺序、内部页和主屏页边界，
+不只是图标数。计划阶段 Dock 整个原始对象必须不变；回读阶段允许 row 包装差异和系统刷新名称、
+版本、日期等非布局元数据，但不放过位置变化。失败返回非零，不会打印“写入成功”。
+超时/断线表示**结果未知**，可能已经生效；先检查设备/回读，勿盲目重试。不会自动回滚。
+若 iOS 自行拆分文件夹内部页或增补资源库图标，也会保守报不匹配。
+
+新 JSON 快照对 `datetime` 使用带类型标记的编码；旧版 `default=str` 快照只针对应用的
+`iconModDate` 解析 ISO 日期（含空格分隔日期时间），无效日期拒绝；不会猜测转换其他字符串。
+这能修复旧快照的日期类型，但不能保证旧快照仍匹配当前安装状态。不要上传快照、配对文件或凭据。
+
+## 离线测试
+
+`pyproject.toml` 没有 pytest 专属配置；使用标准库 unittest，不需要额外测试依赖：
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+测试全部生成合成布局，服务/隧道/回环检查均为 mock，不读取真实设备备份或连接设备。
+仓库根 [SKILL.md](SKILL.md) 提供同一安全流程的简明执行入口。
+
 ## 命令
 
 | 命令 | 作用 |
@@ -147,7 +202,9 @@ pocketdesk rules --init ~/.config/pocketdesk/rules/mine.json   # 生成模板
 | `grid` | 打印设备真实网格参数 |
 | `plan --rules X` | 生成方案并预览，默认 dry-run |
 | `plan --rules X --apply` | 备份后写入，再回读校验 |
-| `restore <snapshot>` | 回滚到某个快照 |
+| `merge --assignments mapping.json` | 尾部散图标归入已有文件夹，默认 dry-run |
+| `merge --assignments mapping.json --apply` | 备份后增量写入，按位置/归属/页边界精确回读 |
+| `restore <snapshot>` | 回滚到某个快照，并精确回读验证 |
 | `rules` | 列出可用规则集 |
 
 ## 注意事项

@@ -39,7 +39,12 @@ payload structure is wrong, not that the device is slow. Raising the timeout
 just makes it fail slower.
 
 Concrete case: hand-writing `setIconState` timed out three times; the official
-`set_icon_state()` returned in under a second.
+`set_icon_state()` returned in under a second. The precise defect was missing
+message framing: `service_connection.build_plist()` returns
+`struct.pack('>L', len(payload)) + payload`, while the old manual path passed
+only `plistlib.dumps(...)` into `send_recv_prefixed`. It omitted the four-byte
+length prefix. **XML itself was not the problem**: the official helper also
+uses XML by default. Prefer the official API rather than hand-building frames.
 
 ## 5. Wrapping `wireProtocolVersion` in a typed box
 
@@ -152,6 +157,79 @@ Check for stale processes before starting:
 ```sh
 pgrep -af 'pocketdesk|tls_psk_proxy|node .*proxy'
 ```
+
+---
+
+## 20. Constructing SpringBoardServicesService without connecting
+
+Construction alone does not establish the service connection. The old
+`service()` factory returned an unconnected instance and leaked its lifetime.
+Use the official API with explicit ownership, including failed-connect cleanup:
+
+```python
+svc = SpringBoardServicesService(tunnel.rsd)
+try:
+    await svc.connect()
+    raw_state = await svc.get_icon_state(format_version="2")
+    # await svc.set_icon_state(raw_plan)  # only after preview + explicit approval
+finally:
+    await svc.close()
+```
+
+`read`, `write` and `metrics` now use this lifecycle. Do not work around a
+missing `connect()` by sending your own plist. That is a separate defect from
+the missing four-byte framing header described in §4.
+
+## 21. Incremental classification is not a full rebuild
+
+`pocketdesk merge --assignments mapping.json` is dry-run by default. The JSON
+object maps `displayIdentifier` (bundle id) to the exact **existing folder
+name**, not a localized app name. It must cover every loose icon on pages after
+the last folder-containing page. Unknown IDs/targets, duplicate keys/icons,
+ambiguous folder names, earlier loose icons, widgets and unsupported structures
+are rejected. It neither guesses nor silently skips unsupported objects.
+
+Dock is top-level index 0, **not a page**. Deep-copy its raw contents unchanged.
+Preserve existing folders, members and page boundaries; append in source order
+and remove emptied trailing home-screen pages. No folder creation/repacking.
+Preview first, obtain approval, then use `--apply`; never combine `--from` with
+`--apply`. Back up before every write. `restore` is itself an explicit write.
+
+## 22. JSON-round-tripping a raw plan destroys plist datetime types
+
+`iconModDate` can be a Python `datetime`, not a string. `json.dumps(default=str)`
+followed by `json.loads()` changes its type; do not feed that result to
+`set_icon_state()`. Planning/merging now deep-copies raw objects and writes them
+directly. Exporting a plan is separate from the object being applied.
+
+New snapshots use a `__pocketdesk_datetime__` marker and decode it on load.
+Legacy stringified snapshots are repaired **only for an app's `iconModDate`**
+using `datetime.fromisoformat`; invalid timestamps fail before writing. Names,
+versions and arbitrary strings are not parsed. This does not reconcile a stale
+snapshot with apps installed/uninstalled later; inspect the restore target.
+
+## 23. Equal icon counts do not prove the layout was applied
+
+The old apply command printed counts and returned success even if iOS put an
+icon into the wrong folder or changed page boundaries. Now read-back checks
+identities, duplicates/extras/missing icons, Dock order, folder membership/order,
+internal folder pages and home-screen page boundaries against the exact plan.
+Planning preserves all raw Dock fields; read-back compares positional structure
+and ignores refreshed non-layout metadata and row wrappers. iOS changing a name,
+version or date is not a placement failure. Reordering or repaginating is.
+
+Mismatch returns nonzero with the recovery snapshot path; it is not success.
+Unsupported/overflow behavior that makes iOS repaginate folders may therefore
+fail conservatively even when the total number of icons looks right.
+
+## 24. A timed-out write is not a failed write, nor a successful one
+
+If `set_icon_state()` or read-back times out/disconnects, the result is
+**UNKNOWN**: the request may already have reached SpringBoard. Do not claim
+success or retry blindly. Keep the pre-write backup, inspect/read back when the
+connection is available, and obtain approval for any corrective write. There is
+no automatic rollback. Do not upload real layouts, pairing files, credentials
+or device/account identifiers to a repository or report.
 
 ---
 
